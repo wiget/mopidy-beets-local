@@ -11,7 +11,7 @@ from mopidy import backend
 from mopidy.exceptions import ExtensionError
 from mopidy.models import Album, Artist, Ref, SearchResult, Track
 
-from uritools import uricompose, urisplit
+from uritools import uricompose, uriencode, urisplit
 
 logger = logging.getLogger(__name__)
 
@@ -232,7 +232,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         for track in tracks:
             yield Ref.track(
                 uri="beetslocal:track:%s:%s" % (track.id,
-                                                track.path.decode('utf8')),
+                                                uriencode(track.path)),
                 name=track.title)
 
     def _browse_album(self, query):
@@ -571,25 +571,6 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
             logger.info(beets_query)
         return beets_query
 
-    def _decode_path(self, path):
-        default_encoding = locale.getpreferredencoding()
-        decoded_path = None
-        try:
-            decoded_path = path.decode(default_encoding)
-        except:
-            pass
-        if not decoded_path:
-            try:
-                decoded_path = path.decode('utf-8')
-            except:
-                pass
-        if not decoded_path:
-            try:
-                decoded_path = path.decode('ISO-8859-1')
-            except:
-                pass
-        return decoded_path
-
     def _convert_item(self, item):
         """
         Transforms a beets item into a mopidy Track
@@ -673,7 +654,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         if 'path' in item:
             track_kwargs['uri'] = "beetslocal:track:%s:%s" % (
                 item['id'],
-                self._decode_path(item['path']))
+                uriencode(item['path'], '/'))
 
         if 'length' in item:
             track_kwargs['length'] = int(item['length']) * 1000
