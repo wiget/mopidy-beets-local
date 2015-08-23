@@ -479,7 +479,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
                                 bitrate=row[11],
                                 comment=row[12],
                                 musicbrainz_id=row[13],
-                                last_modified=int(row[14]),
+                                last_modified=int(row[14] * 1000),
                                 genre=row[15],
                                 uri="beetslocal:track:%s:" % row[0]))
         return tracks
@@ -633,7 +633,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
             track_kwargs['bitrate'] = item['bitrate']
 
         if 'mtime' in item:
-            track_kwargs['last_modified'] = int(item['mtime'])
+            track_kwargs['last_modified'] = int(item['mtime'] * 1000)
 
         track_kwargs['date'] = None
         if self.backend.use_original_release_date:
