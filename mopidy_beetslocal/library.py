@@ -452,20 +452,20 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         for row in result:
             artist = Artist(name=row[5],
                             musicbrainz_id=row[21],
-                            uri="beetslocal:artist:%s:" % row[21])
+                            uri="beetslocal:artist:%s:" % uriencode(row[21]))
             albumartist = Artist(name=row[20],
                                  musicbrainz_id=row[19],
-                                 uri="beetslocal:artist:%s:" % row[19])
+                                 uri="beetslocal:artist:%s:" % uriencode(row[19]))
             composer = Artist(name=row[7],
                               musicbrainz_id='',
-                              uri="beetslocal:composer:%s:" % row[7])
+                              uri="beetslocal:composer:%s:" % uriencode(row[7]))
             album = Album(name=row[6],
                           date=self._build_date_string(row[4], row[3], row[2]),
                           artists=[albumartist],
                           num_tracks=row[16],
                           num_discs=row[17],
                           musicbrainz_id=row[18],
-                          uri="beetslocal:mb_album:%s:" % row[18])
+                          uri="beetslocal:mb_album:%s:" % uriencode(row[18]))
             tracks.append(Track(name=row[1],
                                 artists=[artist],
                                 album=album,
