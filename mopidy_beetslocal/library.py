@@ -327,7 +327,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
     def _browse_mood(self):
         for row in self._query_beets_db(
             'select distinct value from item_attributes'
-            ' where key = "mood";'
+            ' where key = "mood"'
         ):
             yield Ref.directory(
                 uri=uricompose('beetslocal',
@@ -337,7 +337,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
                 name=row[0])
 
     def _browse_format(self):
-        for row in self._query_beets_db('select distinct format from items;'):
+        for row in self._query_beets_db('select distinct format from items'):
             yield Ref.directory(
                 uri=uricompose('beetslocal',
                                None,
@@ -347,7 +347,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
 
     def _browse_samplerate(self):
         for row in self._query_beets_db(
-            'select distinct samplerate from items;'
+            'select distinct samplerate from items'
         ):
             yield Ref.directory(
                 uri=uricompose('beetslocal',
@@ -358,7 +358,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
 
     def _browse_year(self):
         for row in self._query_beets_db(
-            'select distinct original_year from albums;'
+            'select distinct original_year from albums'
         ):
             yield Ref.directory(
                 uri=uricompose('beetslocal',
