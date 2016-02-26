@@ -204,7 +204,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         if field == 'artist':
             result = [ref.name for ref in self._browse_artist(query)]
         elif field == 'genre':
-            result = [ref.name for ref in self._browse_genre()]
+            result = [ref.name for ref in self._browse_genre(query)]
         else:
             logger.info(u'get_distinct not fully implemented yet')
             result = []
