@@ -67,6 +67,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         try:
             tracks = self._find_tracks(query)
         except:
+            tracks = []
             logger.debug("EX = %s", sys.exc_info()[0])
         logger.debug('Find found %s tracks' % len(tracks))
         return SearchResult(
