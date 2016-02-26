@@ -27,6 +27,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         ('Year', 'year'),
         ('Compilations', 'compilations'),
         ('Added At', 'added_at'),
+        ('All Albums', 'album'),
     ]
     ADDED_LEVEL = [
         'Last Month',
@@ -237,14 +238,16 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
                                                 uriencode(track.path)),
                 name=track.title)
 
-    def _browse_album(self, query):
+    def _browse_album(self, query=None):
         logger.debug(u'browse_album query: %s' % query)
         beets_query = []
-        if 'mb_artistid' in query:
-            beets_query.append('mb_albumartistid:%s' % query['mb_artistid'][0])
-        for key in ('albumartist', 'genre', 'year'):
-            if key in query:
-                beets_query.append('%s:%s' % (key, query[key][0]))
+        if query:
+            for k, v in query.items():
+                if k == 'mb_artistid':
+                    beets_field = 'mb_albumartistid'
+                else:
+                    beets_field = k
+                beets_query.append('%s:%s' % (beets_field, v[0]))
         logger.debug('beets_query %s', beets_query)
         for album in self.lib.albums(beets_query):
             yield Ref.album(
