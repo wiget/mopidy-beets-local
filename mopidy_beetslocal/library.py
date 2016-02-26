@@ -19,14 +19,14 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
     ROOT_URI = 'beetslocal:root'
     root_directory = Ref.directory(uri=ROOT_URI, name='Local (beets)')
     FIRST_LEVEL = [
-        'Grouping',
-        'Genre',
-        'Mood',
-        'Format',
-        'Samplerate',
-        'Year',
-        'Compilations',
-        'Added At',
+        ('Grouping', 'grouping'),
+        ('Genre', 'genre'),
+        ('Mood', 'mood'),
+        ('Format', 'format'),
+        ('Sample Rate', 'samplerate'),
+        ('Year', 'year'),
+        ('Compilations', 'compilations'),
+        ('Added At', 'added_at'),
     ]
     ADDED_LEVEL = [
         'Last Month',
@@ -221,13 +221,13 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         return [self._convert_item(item) for item in album.items()]
 
     def _browse_root(self):
-        for row in self.FIRST_LEVEL:
+        for name, level in self.FIRST_LEVEL:
             yield Ref.directory(
                 uri=uricompose('beetslocal',
                                None,
-                               row.lower(),
+                               level,
                                None),
-                name=row)
+                name=name)
 
     def _browse_track(self, query):
         tracks = self.lib.items(['album_id:%s' % query['album'][0]])
