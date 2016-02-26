@@ -454,37 +454,46 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         tracks = []
         result = self._query_beets_db(statement)
         for row in result:
-            artist = Artist(name=row[5],
-                            musicbrainz_id=row[21],
-                            uri="beetslocal:artist:%s:" % uriencode(row[21]))
-            albumartist = Artist(name=row[20],
-                                 musicbrainz_id=row[19],
-                                 uri="beetslocal:artist:%s:" % uriencode(row[19]))
-            composer = Artist(name=row[7],
-                              musicbrainz_id='',
-                              uri="beetslocal:composer:%s:" % uriencode(row[7]))
-            album = Album(name=row[6],
-                          date=self._build_date_string(row[4], row[3], row[2]),
-                          artists=[albumartist],
-                          num_tracks=row[16],
-                          num_discs=row[17],
-                          musicbrainz_id=row[18],
-                          uri="beetslocal:mb_album:%s:" % uriencode(row[18]))
-            tracks.append(Track(name=row[1],
-                                artists=[artist],
-                                album=album,
-                                composers=[composer],
-                                track_no=row[8],
-                                disc_no=row[9],
-                                date=self._build_date_string(row[4], row[3],
-                                                             row[2]),
-                                length=int(row[10] * 1000),
-                                bitrate=row[11],
-                                comment=row[12],
-                                musicbrainz_id=row[13],
-                                last_modified=int(row[14] * 1000),
-                                genre=row[15],
-                                uri="beetslocal:track:%s:" % row[0]))
+            artist = Artist(
+                name=row[5],
+                musicbrainz_id=row[21],
+                uri="beetslocal:artist:%s:" % uriencode(row[21])
+            )
+            albumartist = Artist(
+                name=row[20],
+                musicbrainz_id=row[19],
+                uri="beetslocal:artist:%s:" % uriencode(row[19])
+            )
+            composer = Artist(
+                name=row[7],
+                musicbrainz_id='',
+                uri="beetslocal:composer:%s:" % uriencode(row[7])
+            )
+            album = Album(
+                name=row[6],
+                date=self._build_date_string(row[4], row[3], row[2]),
+                artists=[albumartist],
+                num_tracks=row[16],
+                num_discs=row[17],
+                musicbrainz_id=row[18],
+                uri="beetslocal:mb_album:%s:" % uriencode(row[18])
+            )
+            tracks.append(Track(
+                name=row[1],
+                artists=[artist],
+                album=album,
+                composers=[composer],
+                track_no=row[8],
+                disc_no=row[9],
+                date=self._build_date_string(row[4], row[3], row[2]),
+                length=int(row[10] * 1000),
+                bitrate=row[11],
+                comment=row[12],
+                musicbrainz_id=row[13],
+                last_modified=int(row[14] * 1000),
+                genre=row[15],
+                uri="beetslocal:track:%s:" % row[0]
+            ))
         return tracks
 
     def _find_albums(self, query):
