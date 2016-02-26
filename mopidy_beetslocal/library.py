@@ -286,14 +286,15 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
     def _browse_genre(self, query=None):
         logger.debug(u'browse_genre query: %s' % query)
         statement = 'select Distinct genre from items'
-        if query:
-            statement += ' where 1=1 '
-            statement += self._build_statement(query, 'grouping')
         old_url_query = {}
-        for k, v in query.items():
-            if k in ('genre', ):
-                continue
-            old_url_query[k] = v[0]
+        where_list = []
+        if query:
+            where_list.append(' where 1=1')
+            for k, v in query.items():
+                where_list.append(self._build_statement(query, k))
+                old_url_query[k] = v[0]
+        if where_list:
+            statement += ' '.join(where_list)
         for row in self._query_beets_db(statement):
             url_query = old_url_query.copy()
             url_query['genre'] = row[0]
