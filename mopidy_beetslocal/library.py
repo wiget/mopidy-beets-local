@@ -567,16 +567,39 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         """
         if not item:
             return
+
+        def assign(x):
+            return x
+
+        # beets_attr, mopidy_attr, cast function
+        track_attrs = (
+            ('track', 'track_no', int),
+            ('title', 'name', assign),
+            ('disc', 'disc_no', assign),
+            ('genre', 'genre', assign),
+            ('comments', 'comment', assign),
+            ('bitrate', 'bitrate', assign),
+            ('mtime', 'last_modified', lambda x: int(x * 1000)),
+            ('mb_trackid', 'musicbrainz_id', assign),
+            ('length', 'length', lambda x: int(x * 1000)),
+        )
+
+        album_attrs = (
+            ('tracktotal', 'num_tracks', int),
+            ('album', 'name', assign),
+            ('mb_albumid', 'musicbrainz_id', assign),
+        )
+
         track_kwargs = {}
         album_kwargs = {}
         artist_kwargs = {}
         albumartist_kwargs = {}
 
-        if 'track' in item:
-            track_kwargs['track_no'] = int(item['track'])
+        for beets_attr, mopidy_attr, cast in track_attrs:
+            track_kwargs[mopidy_attr] = cast(item[beets_attr])
 
-        if 'tracktotal' in item:
-            album_kwargs['num_tracks'] = int(item['tracktotal'])
+        for beets_attr, mopidy_attr, cast in album_attrs:
+            album_kwargs[mopidy_attr] = cast(item[beets_attr])
 
         if 'artist' in item:
             artist_kwargs['name'] = item['artist']
@@ -584,27 +607,6 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
 
         if 'albumartist' in item:
             albumartist_kwargs['name'] = item['albumartist']
-
-        if 'album' in item:
-            album_kwargs['name'] = item['album']
-
-        if 'title' in item:
-            track_kwargs['name'] = item['title']
-
-        if 'disc' in item:
-            track_kwargs['disc_no'] = item['disc']
-
-        if 'genre' in item:
-            track_kwargs['genre'] = item['genre']
-
-        if 'comments' in item:
-            track_kwargs['comment'] = item['comments']
-
-        if 'bitrate' in item:
-            track_kwargs['bitrate'] = item['bitrate']
-
-        if 'mtime' in item:
-            track_kwargs['last_modified'] = int(item['mtime'] * 1000)
 
         track_kwargs['date'] = None
         if self.backend.use_original_release_date:
@@ -628,12 +630,6 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
                 except:
                     pass
 
-        if 'mb_trackid' in item:
-            track_kwargs['musicbrainz_id'] = item['mb_trackid']
-
-        if 'mb_albumid' in item:
-            album_kwargs['musicbrainz_id'] = item['mb_albumid']
-
         if 'mb_artistid' in item:
             artist_kwargs['musicbrainz_id'] = item['mb_artistid']
 
@@ -645,9 +641,6 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
             track_kwargs['uri'] = "beetslocal:track:%s:%s" % (
                 item['id'],
                 uriencode(item['path'], '/'))
-
-        if 'length' in item:
-            track_kwargs['length'] = int(item['length']) * 1000
 
         if artist_kwargs:
             artist = Artist(**artist_kwargs)
