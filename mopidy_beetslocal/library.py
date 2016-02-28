@@ -5,6 +5,7 @@ import logging
 import os
 import sqlite3
 import sys
+from itertools import groupby
 
 from mopidy import backend
 from mopidy.exceptions import ExtensionError
@@ -328,47 +329,28 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
                 name=album.album)
 
     def _browse_mood(self):
-        for row in self._query_beets_db(
-            'select distinct value from item_attributes'
-            ' where key = "mood"'
-        ):
-            yield Ref.directory(
-                uri=uricompose('beetslocal',
-                               None,
-                               'artist',
-                               dict(mood=row[0])),
-                name=row[0])
+        return self._browse_field('mood')
 
     def _browse_format(self):
-        for row in self._query_beets_db('select distinct format from items'):
-            yield Ref.directory(
-                uri=uricompose('beetslocal',
-                               None,
-                               'artist',
-                               dict(format=row[0])),
-                name=row[0])
+        return self._browse_field('format')
+
+    def _browse_field(self, field):
+        for value, _ in groupby(
+                x.get(field) for x in self.lib.items(['%s+' % field])
+        ):
+            if value is not None:
+                yield Ref.directory(
+                    uri=uricompose('beetslocal',
+                                   None,
+                                   'artist',
+                                   {field: value}),
+                    name=value)
 
     def _browse_samplerate(self):
-        for row in self._query_beets_db(
-            'select distinct samplerate from items'
-        ):
-            yield Ref.directory(
-                uri=uricompose('beetslocal',
-                               None,
-                               'artist',
-                               dict(samplerate=row[0])),
-                name=str(row[0]))
+        return self._browse_field("samplerate")
 
     def _browse_year(self):
-        for row in self._query_beets_db(
-            'select distinct original_year from albums'
-        ):
-            yield Ref.directory(
-                uri=uricompose('beetslocal',
-                               None,
-                               'artist',
-                               dict(year=row[0])),
-                name=str(row[0]))
+        return self._browse_field('original_year')
 
     def _query_beets_db(self, statement):
         result = []
