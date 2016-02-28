@@ -177,25 +177,18 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         beets_id = uri_dict['beets_id']
         logger.debug('item_type: "%s", beets_id: "%s"' % (item_type, beets_id))
         if item_type == 'track':
-            try:
-                track = self._get_track(beets_id)
-                logger.debug('Beets track for id "%s": %s' %
-                             (beets_id, uri.encode('ascii', 'ignore')))
-                return [track]
-            except Exception as error:
-                logger.debug(u'Failed to lookup "%s": %s' % (uri, error))
-                return []
+            track = self._get_track(beets_id)
+            logger.debug('Beets track for id "%s": %s' %
+                         (beets_id, uri.encode('ascii', 'ignore')))
+            tracks = [track]
         elif item_type == 'album':
-            try:
-                tracks = self._get_album(beets_id)
-                return tracks
-            except Exception as error:
-                logger.debug(u'Failed to lookup "%s": %s' % (uri, error))
-                return []
+            tracks = self._get_album(beets_id)
         else:
-            logger.debug(u"Dont know what to do with item_type: %s" %
+            logger.debug(u"Don't know what to do with item_type: %s" %
                          item_type)
-            return []
+            tracks = []
+
+        return tracks
 
     def get_distinct(self, field, query=None):
         logger.warn(u'get_distinct called field: %s, Query: %s' % (field,
