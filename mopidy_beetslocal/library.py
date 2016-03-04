@@ -47,11 +47,11 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
                                  % (self.backend.beetslibrary))
         try:
             self.lib = beets.library.Library(self.backend.beetslibrary)
-        except sqlite3.OperationalError, e:
+        except sqlite3.OperationalError as e:
             logger.error('BeetsLocalBackend: %s', e)
             raise ExtensionError('Mopidy-BeetsLocal can not open %s',
                                  self.backend.beetslibrary)
-        except sqlite3.DatabaseError, e:
+        except sqlite3.DatabaseError as e:
             logger.error('BeetsLocalBackend: %s', e)
             raise ExtensionError('Moidy-BeetsLocal can not open %s',
                                  self.backend.beetslibrary)
