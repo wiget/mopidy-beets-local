@@ -127,13 +127,13 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         elif level == "compilations":
             return list(self._browse_compilations())
         elif level == "format":
-            return list(self._browse_format())
+            return list(self._browse_field('format'))
         elif level == "samplerate":
-            return list(self._browse_samplerate())
+            return list(self._browse_field('samplerate'))
         elif level == "year":
-            return list(self._browse_year())
+            return list(self._browse_field('original_year'))
         elif level == "mood":
-            return list(self._browse_mood())
+            return list(self._browse_field('mood'))
         elif level == "grouping":
             return list(self._browse_grouping())
         elif level == "genre":
@@ -321,12 +321,6 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
                                dict(album=album.id)),
                 name=album.album)
 
-    def _browse_mood(self):
-        return self._browse_field('mood')
-
-    def _browse_format(self):
-        return self._browse_field('format')
-
     def _browse_field(self, field):
         for value, _ in groupby(
                 x.get(field) for x in self.lib.items(['%s+' % field])
@@ -338,12 +332,6 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
                                    'artist',
                                    {field: value}),
                     name=value)
-
-    def _browse_samplerate(self):
-        return self._browse_field("samplerate")
-
-    def _browse_year(self):
-        return self._browse_field('original_year')
 
     def _query_beets_db(self, statement):
         result = []
