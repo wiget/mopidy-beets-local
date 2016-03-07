@@ -4,7 +4,6 @@ import datetime
 import logging
 import os
 import sqlite3
-import sys
 from itertools import groupby
 
 from mopidy import backend
