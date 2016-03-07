@@ -40,7 +40,9 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         try:
             import beets.library
         except ImportError:
-            raise ExtensionError('BeetsLocalBackend: could not import beets library')
+            raise ExtensionError(
+                'BeetsLocalBackend: could not import beets library'
+            )
         if not os.path.isfile(self.backend.beetslibrary):
             raise ExtensionError('Can not find %s'
                                  % (self.backend.beetslibrary))
