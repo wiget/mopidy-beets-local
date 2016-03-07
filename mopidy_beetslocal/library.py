@@ -40,8 +40,8 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         super(BeetsLocalLibraryProvider, self).__init__(*args, **kwargs)
         try:
             import beets.library
-        except:
-            logger.error('BeetsLocalBackend: could not import beets library')
+        except ImportError:
+            raise ExtensionError('BeetsLocalBackend: could not import beets library')
         if not os.path.isfile(self.backend.beetslibrary):
             raise ExtensionError('Can not find %s'
                                  % (self.backend.beetslibrary))
@@ -55,9 +55,6 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
             logger.error('BeetsLocalBackend: %s', e)
             raise ExtensionError('Moidy-BeetsLocal can not open %s',
                                  self.backend.beetslibrary)
-        except:
-            print "Unexpected error:", sys.exc_info()[0]
-            pass
 
     def _find_exact(self, query=None, uris=None):
         logger.debug("Find query: %s in uris: %s" % (query, uris))
@@ -66,11 +63,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
             # when trackname or composer is queried dont search for albums
             albums = self._find_albums(query)
             logger.debug('Find found %s albums' % len(albums))
-        try:
-            tracks = self._find_tracks(query)
-        except:
-            tracks = []
-            logger.debug("EX = %s", sys.exc_info()[0])
+        tracks = self._find_tracks(query)
         logger.debug('Find found %s tracks' % len(tracks))
         return SearchResult(
             uri=uricompose('beetslocal',
@@ -378,11 +371,11 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         """
         try:
             year = str(datetime.datetime.strptime(datestr, '%Y').date().year)
-        except:
+        except ValueError:
             try:
                 year = str(datetime.datetime.strptime(datestr,
                                                       '%Y-%m-%d').date().year)
-            except:
+            except ValueError:
                 year = None
         return year
 
