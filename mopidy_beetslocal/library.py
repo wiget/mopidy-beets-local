@@ -589,27 +589,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         if 'albumartist' in item:
             albumartist_kwargs['name'] = item['albumartist']
 
-        track_kwargs['date'] = None
-        if self.backend.use_original_release_date:
-            if 'original_year' in item:
-                try:
-                    d = datetime.datetime(
-                        item['original_year'],
-                        item['original_month'],
-                        item['original_day'])
-                    track_kwargs['date'] = '{:%Y-%m-%d}'.format(d)
-                except:
-                    pass
-        else:
-            if 'year' in item:
-                try:
-                    d = datetime.datetime(
-                        item['year'],
-                        item['month'],
-                        item['day'])
-                    track_kwargs['date'] = '{:%Y-%m-%d}'.format(d)
-                except:
-                    pass
+        track_kwargs['date'] = self._format_date(item)
 
         if 'mb_artistid' in item:
             artist_kwargs['musicbrainz_id'] = item['mb_artistid']
@@ -659,27 +639,7 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
         if 'mb_albumid' in album:
             album_kwargs['musicbrainz_id'] = album['mb_albumid']
 
-        album_kwargs['date'] = None
-        if self.backend.use_original_release_date:
-            if 'original_year' in album:
-                try:
-                    d = datetime.datetime(
-                        album['original_year'],
-                        album['original_month'],
-                        album['original_day'])
-                    album_kwargs['date'] = '{:%Y-%m-%d}'.format(d)
-                except:
-                    pass
-        else:
-            if 'year' in album:
-                try:
-                    d = datetime.datetime(
-                        album['year'],
-                        album['month'],
-                        album['day'])
-                    album_kwargs['date'] = '{:%Y-%m-%d}'.format(d)
-                except:
-                    pass
+        album_kwargs['date'] = self._format_date(album)
 
         if 'artpath' in album:
             album_kwargs['images'] = [album['artpath']]
@@ -699,3 +659,29 @@ class BeetsLocalLibraryProvider(backend.LibraryProvider):
 
         album = Album(**album_kwargs)
         return album
+
+    def _format_date(self, item):
+        if self.backend.use_original_release_date:
+            if 'original_year' in item:
+                try:
+                    d = datetime.datetime(
+                        item['original_year'],
+                        item['original_month'],
+                        item['original_day'])
+                except KeyError:
+                    pass
+        else:
+            if 'year' in item:
+                try:
+                    d = datetime.datetime(
+                        item['year'],
+                        item['month'],
+                        item['day'])
+                except KeyError:
+                    pass
+        if d:
+            formatted_date = '{:%Y-%m-%d}'.format(d)
+        else:
+            formatted_date = None
+
+        return formatted_date
